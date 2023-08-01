@@ -7,6 +7,7 @@ const port = process.env.PORT || 5000;
 // TODO: CORS
 app.use(cors());
 
+
 // TODO: Middleware
 app.use(express.json());
 
@@ -22,11 +23,11 @@ const client = new MongoClient(uri, {
   },
 });
 
+
 async function run() {
   try {
     await client.connect();
     const serviceCollection = client.db("heal_scape").collection("services");
-
 
     // TODO: get services from database
     app.get("/services", async (req, res) => {
@@ -34,7 +35,6 @@ async function run() {
       console.log(services);
       res.send(services);
     });
-
 
 
     // TODO: add product in database
@@ -54,83 +54,92 @@ async function run() {
         res.send({
           status: true,
           result: result,
-          reslut2:"data insert successfully"
+          reslut2: "data insert successfully",
         });
-      } catch (error) {
+      } 
+      catch (error) {
         res.send({ status: false, error });
       }
     });
 
 
     // TODO: update service in the database
-    app.put("/update-service/:id", async(req,res)=>{
-      try{
-
+    
+    app.put("/update-service/:id", async (req, res) => {
+      try {
         //* Which id need to update/change
         const id = req.params;
-        console.log(id)   
+        console.log(id);
 
         //* which data need to update/change
         const data = req.body;
-        
+
         //* filter / query for updating which id
-        const filter = { _id : new ObjectId(id) }
-        console.log(filter)
-        const updateDoc = {$set:data}
-        const option = {upsert:true}
-    
-        const result = await serviceCollection.updateOne(filter,updateDoc,option)
-        
+        const filter = { _id: new ObjectId(id) };
+        console.log(filter);
+        const updateDoc = { $set: data };
+        const option = { upsert: true };
+
+        const result = await serviceCollection.updateOne(
+          filter,
+          updateDoc,
+          option
+        );
         res.send({
           status: true,
-          result: result
-        })
-      }
-      catch(error){
+          result: result,
+        });
+      } 
+      catch (error) {
         res.send({
-          status:false,
-          error:"data is not updated"})
+          status: false,
+          error: "data is not updated",
+        });
       }
-    })
+    });
 
 
     // TODO: delete service from database
-    app.delete("/delete-service/:id", async(req,res)=>{
-      try{
-
+    app.delete("/delete-service/:id", async (req, res) => {
+      
+      try {
         // Which id need to delete
         const id = req.params;
-        console.log(id)
-        
-        // need find/ filter/query for which data need to delete 
-        const filter = {_id : new ObjectId(id)}
-        const option = {upsert : true}
-        const result = await serviceCollection.deleteOne(filter,option)
-        
+        console.log(id);
+
+        // need find/ filter/query for which data need to delete
+        const filter = { _id: new ObjectId(id) };
+        const option = { upsert: true };
+        const result = await serviceCollection.deleteOne(filter, option);
+
         res.send({
-          status : true,
-          result: {"data delete successfuly": result}
-        })
+          status: true,
+          result: { "data delete successfuly": result },
+        });
+      } catch (error) {
+        res.send({
+          status: false,
+          error: "id not found",
+        });
       }
-      catch(error){
-              res.send({
-                status:false,
-                error:"id not found"
-              })}
-    })
+    });
     
-    
-
-
-
-
-
-
-
-
-
-
-  
+    // TODO: Delete all services from service Collection
+    app.delete("/remove-all-services", async (req, res) => {
+      try {
+        const result = await serviceCollection.deleteMany({});
+        res.send({
+          status: true,
+          result: result,
+          message: "All data removed from serviceCollection",
+        });
+      } catch (error) {
+        res.send({
+          status: false,
+          error: "Failed to remove all data",
+        });
+      }
+    });
   } finally {
   }
 }
@@ -154,12 +163,14 @@ app.get("/dummy-user/query/user", async (req, res) => {
 });
 // END-----------params--------------->
 
+
 // TODO: ------------params--------->
 app.get("/dummy-user/params/:id", async (req, res) => {
   const { id } = req.params;
   res.json(id);
 });
 // END-----------params--------------->
+
 
 // TODO: CONTACT DETAILS:------------->
 const users = [
@@ -182,9 +193,11 @@ app.post("/users", async (req, res) => {
 });
 //<-----END------CONTACT DETAILS:------------->
 
+
 app.get("/", async (req, res) => {
-  res.send("hello from localhost:5000 port");
+  res.send(`hello from localhost: ${port}`);
 });
+
 
 // 3av2f3B6GP92fRhK
 app.listen(port, () => {
